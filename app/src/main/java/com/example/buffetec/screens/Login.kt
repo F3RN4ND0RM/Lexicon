@@ -1,4 +1,4 @@
-package com.example.buffetec.Components.screens
+package com.example.buffetec.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

@@ -1,4 +1,4 @@
-package com.example.buffetec.Components.screens
+package com.example.buffetec.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text

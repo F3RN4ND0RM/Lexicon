@@ -16,11 +16,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.buffetec.Components.screens.Login
+import com.example.buffetec.screens.Login
 import com.example.buffetec.ui.theme.BuffetecTheme
 import com.example.lazycolumnexample.navigation.Screen
-import com.example.buffetec.Components.screens.Login
-import com.example.buffetec.Components.screens.Mainpage
+import com.example.buffetec.screens.Login
+import com.example.buffetec.screens.Mainpage
 
 
 class MainActivity : ComponentActivity() {
