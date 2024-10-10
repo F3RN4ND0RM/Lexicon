@@ -1,11 +1,11 @@
 package com.example.buffetec.network
 
-import retrofit2.Call  // Asegúrate de tener solo este import
+import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-// Define los datos del usuario que se enviarán a la API
-data class User(
+// Define el cuerpo para el registro y login
+data class RegisterRequest(
     val name: String,
     val surname: String,
     val email: String,
@@ -17,14 +17,17 @@ data class User(
     val cp: String
 )
 
-// Interfaz para la API con Retrofit
+data class LoginRequest(val email: String, val password: String)
+
+// Define las respuestas
+data class RegisterResponse(val message: String, val token: String)
+data class LoginResponse(val message: String, val token: String)
+
+// Define las solicitudes HTTP que hará la app
 interface ApiService {
     @POST("/register")
-    fun registerUser(@Body user: User): Call<UserResponse>
-}
+    fun registerUser(@Body request: RegisterRequest): Call<RegisterResponse>
 
-// Clase para manejar la respuesta de la API
-data class UserResponse(
-    val message: String,
-    val newUser: User
-)
+    @POST("/login")
+    fun loginUser(@Body request: LoginRequest): Call<LoginResponse>
+}
