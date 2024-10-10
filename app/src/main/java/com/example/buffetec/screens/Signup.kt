@@ -1,63 +1,53 @@
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import at.favre.lib.crypto.bcrypt.BCrypt
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.buffetec.network.ApiService
+import com.example.buffetec.network.RegisterRequest
+import com.example.buffetec.network.RetrofitClient
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.buffetec.Components.ButtonComponent
 import com.example.buffetec.R
 import com.example.buffetec.data.UserDatabase
 import com.example.buffetec.data.UserEntity
-import com.example.buffetec.ui.theme.lexendFontFamily
+import com.example.buffetec.network.RegisterResponse
 import com.example.lazycolumnexample.navigation.Screen
-import kotlinx.coroutines.launch
 import java.util.regex.Pattern
+import com.example.buffetec.network.saveTokenLocally
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Signup(navController: NavHostController) {
+fun Signup(navController: NavHostController, onSignup: (String, String, String, String, String, String, String, String, String) -> Unit, onSpeak: (String, String) -> Unit) {
+
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
     var name by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -84,47 +74,32 @@ fun Signup(navController: NavHostController) {
     var neighborhoodExpanded by remember { mutableStateOf(false) }
 
     val neighborhoods = neighborhoodsByCity[selectedCity] ?: listOf("Ingresa una opción")
+    val emailPattern = Pattern.compile(
+        "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+")
 
-
-    val context = LocalContext.current
     val db = UserDatabase.getDatabase(context).userDao()
-    val coroutineScope = rememberCoroutineScope()
 
     var passwordVisible by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
-    // Validación de correo electrónico
-    val emailPattern = Pattern.compile(
-        "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
-    )
+    // Inicializar Retrofit y SharedPreferences
+    val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
+    val sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF6200EA)),
+            .background(Color(0xFF6200EA))
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
-                .background(
-                    Color.White,
-                    shape = RoundedCornerShape(20.dp)
-                ) // Fondo blanco con esquinas redondeadas
+                .background(Color.White, shape = RoundedCornerShape(40.dp))
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Regresar",
-                fontFamily = lexendFontFamily,
-                fontWeight = FontWeight.ExtraLight,
-                textAlign = TextAlign.Start,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick ={
-                        navController.navigate(Screen.Login.route)
-                    })
-            )
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo de la empresa",
@@ -133,7 +108,6 @@ fun Signup(navController: NavHostController) {
                     .padding(bottom = 16.dp)
                     .align(Alignment.CenterHorizontally)
             )
-
 
             // Nombre
             OutlinedTextField(
@@ -273,17 +247,30 @@ fun Signup(navController: NavHostController) {
                 }
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = cp, onValueChange = { cp = it }
+                , label = { Text("Código Postal") },
+                        modifier = Modifier
+                        .fillMaxWidth()
+            )
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Código Postal
-            OutlinedTextField(
-                value = cp,
-                onValueChange = { cp = it },
-                label = { Text("Código Postal") },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
-            )
+            // Botón para hablar los datos en voz alta
+            Button(
+                onClick = {
+                    val dataToSpeak = "Nombre: $name, Apellido: $surname, Correo: $email, Dirección: $address, Ciudad: $selectedCity, Colonia: $selectedNeighborhood, Código Postal: $cp"
+                    onSpeak(dataToSpeak, "es")
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(50.dp),
+                colors = ButtonDefaults.buttonColors(Color(0xFF6200EA))
+            ) {
+                Text(text = "Datos en voz alta", color = Color.White)
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -291,44 +278,96 @@ fun Signup(navController: NavHostController) {
             Button(
                 onClick = {
                     if (name.isEmpty() || surname.isEmpty() || email.isEmpty() || pwd.isEmpty() ||
-                        address.isEmpty() || selectedNeighborhood == "Ingresa una opción" || selectedCity == "Ingresa una opción" || cp.isEmpty()
-                    ) {
+                        address.isEmpty() || selectedNeighborhood == "Ingresa una opción" || selectedCity == "Ingresa una opción" || cp.isEmpty()) {
+
                         Toast.makeText(
                             context,
                             "Por favor llena todos los campos",
                             Toast.LENGTH_LONG
                         ).show()
-                    } else if (!emailPattern.matcher(email).matches()) {
-                        Toast.makeText(context, "Correo inválido", Toast.LENGTH_LONG).show()
-                    } else {
-                        coroutineScope.launch {
-                            val user = UserEntity(
-                                name = name,
-                                surname = surname,
-                                email = email,
-                                pwd = pwd,
-                                address = address,
-                                neighborhood = selectedNeighborhood,
-                                city = selectedCity,
-                                state = "Nuevo León",
-                                cp = cp
-                            )
-                            db.insertUser(user)
-                            Toast.makeText(
-                                context,
-                                "Usuario registrado localmente",
-                                Toast.LENGTH_LONG
-                            ).show()
                         }
+                    else if (!emailPattern.matcher(email).matches()) {
+                        Toast.makeText(context, "Correo inválido", Toast.LENGTH_LONG).show()
+
+                    }else {
+                    coroutineScope.launch {
+                        registerUser(
+                            name, surname, email, pwd, address, selectedNeighborhood, selectedCity, "Nuevo León", cp,
+                            apiService, sharedPreferences, navController
+                        )
+                        val encryptedPassword = encryptPassword(pwd)
+
+                        val user = UserEntity(
+                            name = name,
+                            surname = surname,
+                            email = email,
+                            pwd = encryptedPassword,
+                            address = address,
+                            neighborhood = selectedNeighborhood,
+                            city = selectedCity,
+                            state = "Nuevo León",
+                            cp = cp
+                        )
+                        db.insertUser(user)
+                        Toast.makeText(
+                            context,
+                            "Usuario registrado localmente",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
-                },
+                }},
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(50.dp),
                 colors = ButtonDefaults.buttonColors(Color(0xFF6200EA))
             ) {
                 Text(text = "Registrar", color = Color.White, fontSize = 18.sp)
             }
+
         }
     }
+}
 
+
+
+// Función para registrar un usuario y manejar la respuesta de la API
+fun registerUser(
+    name: String,
+    surname: String,
+    email: String,
+    password: String,
+    address: String,
+    neighborhood: String,
+    city: String,
+    state: String,
+    cp: String,
+    apiService: ApiService,
+    sharedPreferences: SharedPreferences,
+    navController: NavHostController
+) {
+    val registerRequest = RegisterRequest(name, surname, email, password, address, neighborhood, city, state, cp)
+
+    apiService.registerUser(registerRequest).enqueue(object : Callback<RegisterResponse> {
+        override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
+            if (response.isSuccessful) {
+                val token = response.body()?.token
+                saveTokenLocally(token, sharedPreferences)
+                // Navegar al perfil después de un registro exitoso
+                navController.navigate(Screen.Profile.route)
+            } else {
+                // Mostrar error si el registro falla
+                Toast.makeText(navController.context, "Error en el registro", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
+            Toast.makeText(navController.context, "Error de conexión", Toast.LENGTH_LONG).show()
+        }
+    })
+}
+
+
+
+// Función para encriptar la contraseña usando bcrypt
+fun encryptPassword(plainTextPassword: String): String {
+    return BCrypt.withDefaults().hashToString(12, plainTextPassword.toCharArray())
 }
