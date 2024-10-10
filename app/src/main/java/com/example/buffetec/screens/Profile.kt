@@ -1,4 +1,6 @@
+import android.content.SharedPreferences
 import android.provider.ContactsContract.Profile
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,7 +38,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Profile(
-    navController: NavHostController,
+    navController: NavHostController, // Recibir el NavController para la navegación
+    sharedPreferences: SharedPreferences, // Recibir SharedPreferences para eliminar el token
     modifier: Modifier = Modifier // Añadir el parámetro modifier aquí
 ) {
     var name by remember { mutableStateOf("Hugo") }
@@ -123,7 +126,7 @@ fun Profile(
                     horizontalArrangement = Arrangement.spacedBy(16.dp) // Espacio entre botones
                 ) {
                     Button(
-                        onClick = { navController.navigate(Screen.Cases.route) },
+                        onClick = { /* Lógica para editar perfil */ },
                         modifier = Modifier
                             .weight(1f)
                             .height(50.dp),
@@ -134,7 +137,9 @@ fun Profile(
                     }
 
                     Button(
-                        onClick = { navController.navigate(Screen.Login.route)},
+                        onClick = {
+                            logout(navController, sharedPreferences) // Llamar a la función para cerrar sesión
+                        },
                         modifier = Modifier
                             .weight(1f)
                             .height(50.dp),
@@ -146,5 +151,25 @@ fun Profile(
                 }
             }
         }
+    }
+}
+
+
+fun logout(navController: NavHostController, sharedPreferences: SharedPreferences) {
+    val editor = sharedPreferences.edit()
+    editor.remove("jwt_token") // Eliminar el token de las preferencias compartidas
+    editor.apply()
+
+    // Verificar si el token fue eliminado
+    val token = sharedPreferences.getString("jwt_token", null)
+    if (token == null) {
+        Log.d("Logout", "Token eliminado correctamente")
+    } else {
+        Log.d("Logout", "Error al eliminar el token")
+    }
+
+    // Navegar a la pantalla de inicio de sesión
+    navController.navigate(Screen.Login.route) {
+        popUpTo(Screen.Login.route) { inclusive = true } // Limpiar el historial de navegación para evitar volver atrás
     }
 }
