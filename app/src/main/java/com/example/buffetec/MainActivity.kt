@@ -1,5 +1,7 @@
 package com.example.buffetec
 
+import CaseDetail
+import Cases
 import Profile
 import Signup
 import android.os.Bundle
@@ -19,7 +21,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.buffetec.screens.Login
 import com.example.buffetec.ui.theme.BuffetecTheme
 import com.example.lazycolumnexample.navigation.Screen
-import com.example.buffetec.screens.Cases
 import com.example.buffetec.screens.Login
 import com.example.buffetec.screens.Mainpage
 
@@ -56,8 +57,14 @@ fun MainNavigation(modifier: Modifier = Modifier) {
         composable(Screen.Profile.route){
             Profile(navController)
         }
-        composable(Screen.Cases.route) {
+        composable(Screen.Cases.route){
             Cases(navController)
+        }
+        composable("case_detail/{caseId}") { backStackEntry ->
+            val caseId = backStackEntry.arguments?.getString("caseId")
+            if (caseId != null) {
+                CaseDetail(caseId, navController)
+            }
         }
     }
 

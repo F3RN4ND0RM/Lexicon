@@ -1,5 +1,3 @@
-package com.example.buffetec.screens
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -9,17 +7,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavHostController
+import com.example.lazycolumnexample.model.getCases
 
 @Composable
-fun CaseDetail(navBackStackEntry: NavBackStackEntry, modifier: Modifier = Modifier) {
-    val caseNumber = navBackStackEntry.arguments?.getString("caseNumber")
+fun CaseDetail(caseId: String, navController: NavHostController) {
+    val case = getCases().find { it.caseNumber == caseId }
 
-    // You can fetch or pass more case details using the caseNumber
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -27,13 +23,29 @@ fun CaseDetail(navBackStackEntry: NavBackStackEntry, modifier: Modifier = Modifi
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "Detalles del Caso #$caseNumber",
+                text = "Detalles del Caso #$case?.caseNumber",
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
                 color = Color.Black
             )
-            // Display the details of the case based on the caseNumber
-            Text(text = "Aquí irán los detalles completos del caso...")
+            Text(
+                text = "Título: ${case?.caseTitle}",
+                fontWeight = FontWeight.Normal,
+                fontSize = 18.sp,
+                color = Color.Black
+            )
+            Text(
+                text = "Estado: ${case?.status}",
+                fontWeight = FontWeight.Normal,
+                fontSize = 18.sp,
+                color = Color.Black
+            )
+            Text(
+                text = "Próxima acción: ${case?.nextAction}",
+                fontWeight = FontWeight.Normal,
+                fontSize = 18.sp,
+                color = Color.Black
+            )
         }
     }
 }
