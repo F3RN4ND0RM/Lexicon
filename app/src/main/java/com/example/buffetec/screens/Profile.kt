@@ -123,7 +123,7 @@ fun Profile(
                     horizontalArrangement = Arrangement.spacedBy(16.dp) // Espacio entre botones
                 ) {
                     Button(
-                        onClick = { /* Lógica para editar perfil */ },
+                        onClick = { navController.navigate(Screen.Cases.route) },
                         modifier = Modifier
                             .weight(1f)
                             .height(50.dp),

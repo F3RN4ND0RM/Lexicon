@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.buffetec.screens.Login
 import com.example.buffetec.ui.theme.BuffetecTheme
 import com.example.lazycolumnexample.navigation.Screen
+import com.example.buffetec.screens.Cases
 import com.example.buffetec.screens.Login
 import com.example.buffetec.screens.Mainpage
 
@@ -54,6 +55,9 @@ fun MainNavigation(modifier: Modifier = Modifier) {
         }
         composable(Screen.Profile.route){
             Profile(navController)
+        }
+        composable(Screen.Cases.route) {
+            Cases(navController)
         }
     }
 
