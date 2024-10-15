@@ -115,6 +115,7 @@ fun Signup(navController: NavHostController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             Text(text = "Regresar",
                 fontFamily = lexendFontFamily,
                 fontWeight = FontWeight.ExtraLight,

@@ -1,5 +1,6 @@
 package com.example.buffetec
 
+
 import CaseDetail
 import Cases
 import Profile
@@ -18,11 +19,15 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.buffetec.screens.Admin
 import com.example.buffetec.screens.Login
 import com.example.buffetec.ui.theme.BuffetecTheme
 import com.example.lazycolumnexample.navigation.Screen
 import com.example.buffetec.screens.Login
 import com.example.buffetec.screens.Mainpage
+import com.example.buffetec.screens.Profile
+import com.example.buffetec.screens.Admin
+
 
 
 class MainActivity : ComponentActivity() {
@@ -47,7 +52,8 @@ class MainActivity : ComponentActivity() {
 fun MainNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
-    NavHost(navController, startDestination = Screen.Login.route, modifier = modifier) {
+    NavHost(navController, startDestination = Screen.Admin.route, modifier = modifier) {
+
         composable(Screen.Login.route) {
             Login(navController)
         }
@@ -57,6 +63,12 @@ fun MainNavigation(modifier: Modifier = Modifier) {
         composable(Screen.Profile.route){
             Profile(navController)
         }
+
+        composable(Screen.Admin.route){
+            Admin(navController)
+        }
+
+
         composable(Screen.Cases.route){
             Cases(navController)
         }
@@ -66,6 +78,7 @@ fun MainNavigation(modifier: Modifier = Modifier) {
                 CaseDetail(caseId, navController)
             }
         }
+
     }
 
 }
