@@ -44,7 +44,7 @@ fun MainPage(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Bienvenido a la Asesoría Legal",
+                text = "Bienvenido a Buffetec",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF0D47A1),
