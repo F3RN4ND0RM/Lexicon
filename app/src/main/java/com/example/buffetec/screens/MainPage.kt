@@ -93,8 +93,8 @@ fun BottomNavBar(navController: NavHostController) {
 }
 
 sealed class NavItem(val route: String, val title: String, val icon: ImageVector) {
-    object Casos : NavItem("casos", "Casos", Icons.Default.Cases)
-    object Perfil : NavItem("perfil", "Perfil", Icons.Default.Person)
+    object Casos : NavItem("Cases", "Casos", Icons.Default.Cases)
+    object Perfil : NavItem("Profile", "Perfil", Icons.Default.Person)
 }
 
 @Composable
