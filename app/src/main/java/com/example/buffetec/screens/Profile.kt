@@ -192,7 +192,11 @@ fun Profile(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Button(
+
                         onClick = { isEditingProfile = !isEditingProfile },
+
+                        onClick = { navController.navigate(Screen.Cases.route) },
+
                         modifier = Modifier
                             .weight(1f)
                             .height(50.dp),

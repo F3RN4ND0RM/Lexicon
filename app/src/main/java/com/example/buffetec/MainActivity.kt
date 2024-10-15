@@ -1,5 +1,9 @@
 package com.example.buffetec
 
+
+import CaseDetail
+import Cases
+import Profile
 import Signup
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -59,8 +63,20 @@ fun MainNavigation(modifier: Modifier = Modifier) {
         composable(Screen.Profile.route){
             Profile(navController)
         }
+
         composable(Screen.Admin.route){
             Admin(navController)
+        }
+
+
+        composable(Screen.Cases.route){
+            Cases(navController)
+        }
+        composable("case_detail/{caseId}") { backStackEntry ->
+            val caseId = backStackEntry.arguments?.getString("caseId")
+            if (caseId != null) {
+                CaseDetail(caseId, navController)
+            }
         }
 
     }
