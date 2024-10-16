@@ -1,4 +1,6 @@
+
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -41,22 +44,20 @@ fun Cases(
 
     Box(
         modifier = modifier
-            .fillMaxSize()
-            .background(Color(0xFF7A3CFF)),
+            .fillMaxSize(),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(6.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "Casos Legales",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.padding(vertical = 16.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             )
 
             LazyColumn(
@@ -81,14 +82,15 @@ fun CaseCard(legalCase: LegalCase, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(4.dp)
+            .shadow(4.dp, shape = RoundedCornerShape(15.dp))
             .clickable { onClick() }
             .background(Color.White, shape = RoundedCornerShape(15.dp))
-            .padding(16.dp)
+            .padding(12.dp).border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
     ) {
         Column(
             modifier = Modifier.padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(text = "Número de Caso: ${legalCase.caseNumber}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Text(text = "Título: ${legalCase.caseTitle}", fontSize = 16.sp)
