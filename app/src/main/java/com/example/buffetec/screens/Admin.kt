@@ -103,32 +103,35 @@ fun UserItem(
             .background(Color(0xFFF1F1F1), shape = RoundedCornerShape(15.dp))
             .padding(16.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            horizontalAlignment = Alignment.Start
         ) {
-            Column {
-                Text(
-                    text = user.name,
-                    style = TextStyle(
-                        fontFamily = lexendFontFamily,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 18.sp
-                    )
+            // Mostrar el nombre del usuario
+            Text(
+                text = user.name,
+                style = TextStyle(
+                    fontFamily = lexendFontFamily,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 18.sp
                 )
-                Text(
-                    text = if (user.isAdmin) "Admin" else "User",
-                    style = TextStyle(
-                        fontFamily = lexendFontFamily,
-                        fontWeight = FontWeight.Light,
-                        fontSize = 16.sp
-                    )
-                )
-            }
+            )
 
+            // Mostrar si es Admin o User
+            Text(
+                text = if (user.isAdmin) "Admin" else "User",
+                style = TextStyle(
+                    fontFamily = lexendFontFamily,
+                    fontWeight = FontWeight.Light,
+                    fontSize = 16.sp
+                )
+            )
+
+            Spacer(modifier = Modifier.height(8.dp)) // Añadir un espaciado entre el texto y el botón
+
+            // Mostrar botón o mensaje dependiendo del estado de admin
             if (!user.isAdmin) {
                 ButtonComponent(
                     label = "Grant Admin Access",
