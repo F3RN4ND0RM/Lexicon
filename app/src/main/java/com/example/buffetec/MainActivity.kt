@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
 fun MainNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
-    NavHost(navController, startDestination = Screen.MainPage.route, modifier = modifier) {
+    NavHost(navController, startDestination = Screen.Login.route, modifier = modifier) {
 
         composable(Screen.Login.route) {
             Login(navController)

@@ -1,4 +1,9 @@
 package com.example.buffetec.screens
+
+import android.app.Application
+import android.content.Context
+import android.util.Log
+    import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,10 +22,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.VerticalAlignmentLine
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,16 +49,33 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.buffetec.Components.ButtonComponent
 import com.example.buffetec.R
+import com.example.buffetec.interfaces.UsersServices
+import com.example.buffetec.network.LoginRequest
+import com.example.buffetec.network.LoginResponse
+import com.example.buffetec.network.RetrofitClient
 import com.example.buffetec.ui.theme.lexendFontFamily
 import com.example.lazycolumnexample.navigation.Screen
 import com.example.tareaimc.InputField
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.buffetec.viewmodels.LoginState
+import androidx.compose.runtime.rememberCoroutineScope
+import  com.example.buffetec.viewmodels.UsersViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun Login(navController: NavHostController){
 
+
     val user = remember { mutableStateOf("")}
     val password = remember { mutableStateOf("")}
+    val context = LocalContext.current
+    val userViewModel = remember { UsersViewModel(UsersServices.instance, context.applicationContext as Application) }
+    val coroutineScope = rememberCoroutineScope()
+    val loginState by userViewModel.loginState.collectAsState()
+
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -110,32 +137,38 @@ fun Login(navController: NavHostController){
                     Spacer(modifier = Modifier.height(30.dp))
                     InputField(label = "Contraseña", value = password.value , onValueChange = {password.value = it}, lexendFontFam = lexendFontFamily , visualTrans = true)
                     Spacer(modifier = Modifier.height(30.dp))
-                    ButtonComponent(label = "Log In", onClick = {navController.navigate(Screen.Profile.route)})
+                    ButtonComponent(label = "Log In", onClick = {
+                        coroutineScope.launch {
+                            userViewModel.login(user.value, password.value)
+                        }
+                    })
                     Text(text = "Registrarme",
                         fontFamily = lexendFontFamily,
                         fontWeight = FontWeight.ExtraLight,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable(onClick ={
+                            .clickable(onClick = {
                                 navController.navigate(Screen.Signup.route)
                             })
                     )
+
+                    // Navigation effect when login is successful
+                    LaunchedEffect(loginState) {
+                        if (loginState is LoginState.Success) {
+                            navController.navigate(Screen.Signup.route) // Replace with your desired route
+                        }
+                        if (loginState is LoginState.Error) {
+                            Toast.makeText(context,"Usuario o contraseña incorrecto",Toast.LENGTH_SHORT).show()
+
+                        }
+                    }
                 }
             }
         }
+
+
     }
 
+
 }
-
-fun formulario(
-    _user : String,
-    _password : String,
-):kotlin.Boolean{
-
-    val user = _user
-    val password = _password
-
-    return true
-}
-
