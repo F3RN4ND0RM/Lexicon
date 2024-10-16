@@ -2,7 +2,13 @@ package com.example.buffetec.screens
 
 import CaseDetail
 import Cases
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -38,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -234,18 +241,53 @@ fun ServicesSection() {
     }
 }
 
+fun sendSms(context: Context) {
+    val smsIntent = Intent(Intent.ACTION_SENDTO).apply {
+        data = Uri.parse("smsto:81 8328 4344")
+        putExtra("sms_body", "👋 ¡Hola! Me gustaría recibir asesoría personalizada sobre mi caso. 📜💼 ¿Podrían ayudarme, por favor?")
+    }
+
+    // Intentar iniciar la actividad
+    try {
+        context.startActivity(smsIntent)
+    } catch (e: Exception) {
+        // Manejo de errores
+        Toast.makeText(context, "No se encontró ninguna aplicación de mensajería.", Toast.LENGTH_SHORT).show()
+    }
+}
+
 @Composable
 fun ServiceItem(title: String, description: String, icon: ImageVector) {
+    val context = LocalContext.current
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
             .background(Color(0xFFF0F0F0), shape = RoundedCornerShape(8.dp))
             .padding(16.dp)
+            .clickable {
+                if (title == "Asesoría Personalizada") {
+                    sendSms(context)
+                }
+            }
     ) {
         Icon(icon, contentDescription = title, modifier = Modifier.size(40.dp), tint = Color(0xFF1976D2))
         Text(text = title, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
         Text(text = description, fontSize = 14.sp, color = Color.Gray, modifier = Modifier.padding(8.dp))
+    }
+}
+
+@SuppressLint("QueryPermissionsNeeded")
+fun sendEmail(context: Context) {
+    val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+        data = Uri.parse("mailto:") // Solo se permiten aplicaciones de correo
+        putExtra(Intent.EXTRA_EMAIL, arrayOf("correo@example.com")) // Cambia esto por el correo deseado
+        putExtra(Intent.EXTRA_SUBJECT, "Asesoría Personalizada")
+        putExtra(Intent.EXTRA_TEXT, "Por favor, incluya aquí su consulta.")
+    }
+    if (emailIntent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(emailIntent)
     }
 }
 
