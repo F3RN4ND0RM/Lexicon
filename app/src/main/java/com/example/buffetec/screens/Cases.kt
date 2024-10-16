@@ -1,6 +1,4 @@
-
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,26 +41,26 @@ fun Cases(
     )
 
     Box(
-        modifier = modifier
-            .fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(6.dp),
+                .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "Casos Legales",
-                fontSize = 24.sp,
+                fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
+                color = Color.Black,
+                modifier = Modifier.padding(vertical = 16.dp)
             )
 
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(cases) { case ->
                     CaseCard(
@@ -82,20 +80,36 @@ fun CaseCard(legalCase: LegalCase, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(4.dp)
-            .shadow(4.dp, shape = RoundedCornerShape(15.dp))
+            .shadow(2.dp, shape = RoundedCornerShape(12.dp))
             .clickable { onClick() }
-            .background(Color.White, shape = RoundedCornerShape(15.dp))
-            .padding(12.dp).border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
+            .background(Color.White, shape = RoundedCornerShape(12.dp))
+            .padding(16.dp)
     ) {
         Column(
-            modifier = Modifier.padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier.fillMaxWidth().background(Color.White),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(text = "Número de Caso: ${legalCase.caseNumber}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Text(text = "Título: ${legalCase.caseTitle}", fontSize = 16.sp)
-            Text(text = "Estado: ${legalCase.status}", fontSize = 16.sp)
-            Text(text = "Próxima acción: ${legalCase.nextAction}", fontSize = 16.sp, color = Color.Gray)
+            Text(
+                text = "Caso #${legalCase.caseNumber}",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = Color.Black
+            )
+            Text(
+                text = legalCase.caseTitle,
+                fontSize = 18.sp,
+                color = Color.Black
+            )
+            Text(
+                text = "Estado: ${legalCase.status}",
+                fontSize = 16.sp,
+                color = Color.Gray
+            )
+            Text(
+                text = "Próxima acción: ${legalCase.nextAction}",
+                fontSize = 16.sp,
+                color = Color.Gray
+            )
         }
     }
 }

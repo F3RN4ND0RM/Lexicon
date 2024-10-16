@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,14 +33,7 @@ fun CaseDetail(caseId: String, navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFBBDEFB),
-                        Color(0xFF0D47A1)
-                    )
-                )
-            )
+            .background(Color(0xFFF2F2F2))
             .padding(16.dp)
     ) {
         Column(
@@ -55,60 +46,56 @@ fun CaseDetail(caseId: String, navController: NavHostController) {
                 onClick = { navController.popBackStack() },
                 modifier = Modifier
                     .align(Alignment.Start)
-                    .background(Color.White, shape = CircleShape)
+                    .background(Color.LightGray, shape = CircleShape)
                     .padding(4.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Regresar",
-                    tint = Color(0xFF0D47A1)
+                    contentDescription = "Back",
+                    tint = Color.DarkGray
                 )
             }
-
-            // Middle: Case Details
             Card(
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
                 ),
-                elevation = CardDefaults.cardElevation(8.dp),
+                elevation = CardDefaults.cardElevation(4.dp),
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
             ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "Detalles del Caso #${case?.caseNumber}",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 26.sp,
-                        color = Color(0xFF0D47A1)
+                        text = "Número de Caso #${case?.caseNumber}",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 22.sp,
+                        color = Color.Black
                     )
                     Text(
-                        text = "Título: ${case?.caseTitle}",
-                        fontWeight = FontWeight.Medium,
+                        text = "Descripción: ${case?.caseTitle}",
+                        fontWeight = FontWeight.Normal,
                         fontSize = 18.sp,
-                        color = Color(0xFF1976D2)
+                        color = Color.DarkGray
                     )
                     Text(
                         text = "Estado: ${case?.status}",
-                        fontWeight = FontWeight.Normal,
+                        fontWeight = FontWeight.Light,
                         fontSize = 16.sp,
-                        color = Color(0xFF42A5F5)
+                        color = Color.Gray
                     )
                     Text(
-                        text = "Próxima acción: ${case?.nextAction}",
-                        fontWeight = FontWeight.Normal,
+                        text = "Próxima Acción: ${case?.nextAction}",
+                        fontWeight = FontWeight.Light,
                         fontSize = 16.sp,
-                        color = Color(0xFF64B5F6)
+                        color = Color.Gray
                     )
                 }
             }
-
-            // Bottom: Empty space for layout balance
             Spacer(modifier = Modifier.height(32.dp))
         }
     }

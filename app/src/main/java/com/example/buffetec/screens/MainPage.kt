@@ -1,6 +1,8 @@
 package com.example.buffetec.screens
 
+import CaseDetail
 import Cases
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,10 +10,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AssignmentInd
 import androidx.compose.material.icons.filled.Book
-import androidx.compose.material.icons.filled.Cases
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
@@ -34,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -45,8 +51,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainPage(navController: NavHostController) {
-    val navController = rememberNavController()  // Creamos el NavController
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed) // Control del Drawer
+    val navController = rememberNavController()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     ModalNavigationDrawer(
@@ -63,7 +69,7 @@ fun MainPage(navController: NavHostController) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Buffetec") },
+                    title = { Text("Bufetec") },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(Icons.Default.Menu, contentDescription = "Abrir Drawer")  // Cambiamos al ícono de menú
@@ -87,8 +93,12 @@ fun MainPage(navController: NavHostController) {
                 composable(NavItem.Home.route) {
                     Home()  // Llamada a la pantalla de Citas
                 }
-
-
+                composable("case_detail/{caseId}") { backStackEntry ->
+                    val caseId = backStackEntry.arguments?.getString("caseId")
+                    if (caseId != null) {
+                        CaseDetail(caseId, navController)
+                    }
+                }
             }
         }
     }
@@ -130,28 +140,59 @@ fun DrawerContent(navController: NavHostController, closeDrawer: () -> Unit) {
 
 @Composable
 fun Home() {
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Welcome Header
         Text(
-            text = "Bienvenido a Buffetec",
-            fontSize = 24.sp,
+            text = "Bienvenido a Bufetec",
+            fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF0D47A1),
-            modifier = Modifier.padding(bottom = 16.dp)
+            color = Color(0xFF1976D2),
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         Text(
-            text = "Obtén asesoría legal personalizada y consulta tus casos.",
-            fontSize = 16.sp,
+            text = "Centro de Asistencia Jurídica Gratuita del Tecnológico de Monterrey",
+            fontSize = 18.sp,
+            textAlign = TextAlign.Center,
             color = Color.Gray,
             modifier = Modifier.padding(bottom = 32.dp)
         )
+
+        // Services Section
+        Text(
+            text = "Nuestros Servicios",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        ServicesSection()
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Testimonials Section
+        Text(
+            text = "Testimonios",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        TestimonialsSection()
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Call to Action Button
         Button(
-            onClick = {  },
+            onClick = { /* Action */ },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF1976D2)
@@ -159,16 +200,93 @@ fun Home() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp)
+                .background(Color.White, shape = RoundedCornerShape(8.dp))
         ) {
-            Text(text = "Pedir Asesoría Legal", color = Color.White)
+            Text(text = "Solicitar Asesoría Legal", color = Color.White)
         }
     }
 }
 
+@Composable
+fun ServicesSection() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+    ) {
+        ServiceItem(
+            "Consulta de Casos",
+            "Accede y consulta el estado de tus casos en cualquier momento.",
+            Icons.Default.AssignmentInd
+        )
+        ServiceItem(
+            "Asesoría Personalizada",
+            "Nuestros abogados están aquí para brindarte asesoría legal personalizada.",
+            Icons.Default.Person
+        )
+        ServiceItem(
+            "Biblioteca Legal",
+            "Obtén ayuda con toda la información legal actualizada al día.",
+            Icons.Default.Book
+        )
+    }
+}
+
+@Composable
+fun ServiceItem(title: String, description: String, icon: ImageVector) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFFF0F0F0), shape = RoundedCornerShape(8.dp))
+            .padding(16.dp)
+    ) {
+        Icon(icon, contentDescription = title, modifier = Modifier.size(40.dp), tint = Color(0xFF1976D2))
+        Text(text = title, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+        Text(text = description, fontSize = 14.sp, color = Color.Gray, modifier = Modifier.padding(8.dp))
+    }
+}
+
+@Composable
+fun TestimonialsSection() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp)
+    ) {
+        TestimonialItem(
+            author = "Juan Pérez",
+            content = "Buffetec me ayudó a resolver un conflicto legal rápidamente. Excelente atención y profesionalismo."
+        )
+        TestimonialItem(
+            author = "María González",
+            content = "El equipo de abogados fue muy claro y me ofrecieron soluciones efectivas. Recomiendo ampliamente el servicio."
+        )
+        TestimonialItem(
+            author = "Carlos Ramírez",
+            content = "Gracias a Buffetec, pude resolver mi situación legal con facilidad. Siempre estuvieron dispuestos a ayudar."
+        )
+    }
+}
+
+@Composable
+fun TestimonialItem(author: String, content: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(8.dp))
+            .padding(16.dp)
+    ) {
+        Text(text = content, fontSize = 16.sp, color = Color.Gray)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = "- $author", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1976D2))
+    }
+}
 sealed class NavItem(val route: String, val title: String, val icon: ImageVector) {
     object Home : NavItem("home", "Home", Icons.Default.Home)
-    object Casos : NavItem("cases", "Casos", Icons.Default.Cases)
+    object Casos : NavItem("cases", "Casos", Icons.Default.AssignmentInd)
     object Perfil : NavItem("profile", "Perfil", Icons.Default.Person)
     object Biblioteca : NavItem("biblioteca", "Biblioteca", Icons.Default.Book)
-
 }
