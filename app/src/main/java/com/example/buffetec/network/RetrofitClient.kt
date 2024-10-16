@@ -1,28 +1,39 @@
 package com.example.buffetec.network
 
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
-    private const val BASE_URL = "http://10.22.194.187:3000/"
 
-    // Crear un cliente de OkHttp con el interceptor de logging
+    private const val BASE_URL = "https://api-proyecto-w0ws.onrender.com/api/" // URL de tu API
+
+    // Interceptor para el logging
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY  // Esto mostrará todo (cuerpo, headers, etc.)
+        level = HttpLoggingInterceptor.Level.BODY
     }
 
-    private val client = OkHttpClient.Builder()
+    // Configuración del cliente HTTP con tiempos de espera extendidos
+// Increasing the timeout values
+    private val httpClient = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)
+        .connectTimeout(60, TimeUnit.SECONDS)  // Increased from 30 to 60 seconds
+        .readTimeout(60, TimeUnit.SECONDS)     // Increased from 30 to 60 seconds
+        .writeTimeout(60, TimeUnit.SECONDS)    // Increased from 30 to 60 seconds
         .build()
 
-    val apiService: ApiService by lazy {
+
+    val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
+            .client(httpClient)
             .addConverterFactory(GsonConverterFactory.create())
-            .client(client)  // Usa el cliente que incluye los logs
             .build()
-            .create(ApiService::class.java)
+    }
+
+    val apiService: ApiService by lazy {
+        retrofit.create(ApiService::class.java)
     }
 }

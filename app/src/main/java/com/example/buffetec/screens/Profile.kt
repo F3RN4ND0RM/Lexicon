@@ -1,3 +1,4 @@
+
 package com.example.buffetec.screens
 
 
@@ -286,3 +287,4 @@ fun ChangePasswordDialog(onDismiss: () -> Unit, onPasswordChange: (String) -> Un
         }
     )
 }
+
