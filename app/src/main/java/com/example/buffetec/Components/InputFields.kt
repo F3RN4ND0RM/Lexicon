@@ -1,4 +1,4 @@
-package com.example.tareaimc
+package com.example.buffetec.Components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -35,7 +36,7 @@ fun InputField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(text = label) },
+        label = { Text(text = label, fontFamily = lexendFontFamily,fontWeight = FontWeight.ExtraLight,) },
         visualTransformation = if (!visualTrans) VisualTransformation.None else PasswordVisualTransformation(),
 
         modifier = Modifier

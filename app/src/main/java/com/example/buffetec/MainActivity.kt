@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -66,47 +67,44 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
 
 
-        NavHost(navController, startDestination = "biblioteca", modifier = modifier) {
-            composable("biblioteca") {
+        NavHost(navController, startDestination = Screen.Login.route, modifier = modifier) {
+            composable(Screen.Biblioteca.route) {
                 Biblioteca(navController)
             }
-
-    NavHost(navController, startDestination = Screen.Login.route, modifier = modifier) {
-
-        composable(Screen.Login.route) {
-            Login(navController)
-        }
-        composable(Screen.Signup.route) {
-            Signup(navController)
-        }
-        composable(Screen.Profile.route){
-            Profile(navController)
-        }
-
-        composable(Screen.Admin.route){
-            Admin(navController)
-        }
-
-        composable(Screen.Cases.route) {
-            Cases(navController)
-
-        }
-
-        composable(Screen.MainPage.route) {
-            MainPage(navController)
-        }
-
-        composable("case_detail/{caseId}") { backStackEntry ->
-            val caseId = backStackEntry.arguments?.getString("caseId")
-            if (caseId != null) {
-                CaseDetail(caseId, navController)
+            composable(Screen.Login.route) {
+                Login(navController)
             }
+            composable(Screen.Signup.route) {
+                Signup(navController)
+            }
+            composable(Screen.Profile.route) {
+                Profile(navController)
+            }
+
+            composable(Screen.Admin.route) {
+                Admin(navController)
+            }
+
+            composable(Screen.Cases.route) {
+                Cases(navController)
+
+            }
+
+            composable(Screen.MainPage.route) {
+                MainPage(navController)
+            }
+
+            composable("case_detail/{caseId}") { backStackEntry ->
+                val caseId = backStackEntry.arguments?.getString("caseId")
+                if (caseId != null) {
+                    CaseDetail(caseId, navController)
+                }
+            }
+
+        }
+
         }
 
     }
 
-}
-
-
-}
 

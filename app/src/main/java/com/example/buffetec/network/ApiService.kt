@@ -6,6 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 data class User(
@@ -42,7 +43,7 @@ data class LoginResponse(
 data class RegisterRequest(
     val name: String,
     val surname: String,
-    val gender: String,
+    val gender: String?,
     val email: String,
     val address: String,
     val neighborhood: String,
@@ -51,20 +52,13 @@ data class RegisterRequest(
     val state: String,
     val cp: String,
     val phone: String,
-    val rol: String,
-    val AUP: Boolean
+    val rol: String?,
+    val AUP: Boolean?
 )
 
 // API Service
 interface ApiService {
 
-    // Login de usuario (sin necesidad de token aún)
-    @POST("/api/login")
-    fun loginUser(@Body loginRequest: LoginRequest): Call<LoginResponse>
-
-    // Método para registro de usuario
-    @POST("/api/users")
-    fun registerUser(@Body registerRequest: RegisterRequest): Call<Void>
 
     // Obtener la lista de usuarios (requiere el token en el encabezado de autorización)
     @GET("/api/users")
@@ -79,10 +73,11 @@ interface ApiService {
     fun getUserById(
         @Header("Authorization") token: String  // Paso del token en el header
     ): Call<User>
+
+    @GET("biblioteca/{category}")
+    fun searchArticles(@Path("category") category: String): Call<ApiResponse>
 }
 
-import retrofit2.http.GET
-import retrofit2.http.Path
 
 data class ApiResponse(
     val id: String,
@@ -106,7 +101,4 @@ data class Reference(
     val snippet: String
 )
 
-interface ApiService {
-    @GET("biblioteca/{category}")
-    fun searchArticles(@Path("category") category: String): Call<ApiResponse>
-}
+

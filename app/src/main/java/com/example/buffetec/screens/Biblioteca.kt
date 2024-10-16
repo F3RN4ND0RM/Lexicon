@@ -36,6 +36,9 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 import android.speech.tts.TextToSpeech
+import androidx.compose.foundation.BorderStroke
+import com.example.buffetec.Components.ButtonComponent
+import com.example.buffetec.ui.theme.lexendFontFamily
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,17 +69,18 @@ fun Biblioteca(navHostController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF7A3CFF))
             .padding(16.dp)
     ) {
         Text(
             text = "Biblioteca Digital",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.padding(vertical = 16.dp),
-            textAlign = TextAlign.Center
+            color = Color.Black,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            fontFamily = lexendFontFamily,
+            style = TextStyle( fontWeight = FontWeight.ExtraLight, fontSize = 30.sp)
         )
+
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         OutlinedTextField(
             value = searchText,
@@ -87,7 +91,7 @@ fun Biblioteca(navHostController: NavHostController) {
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .background(Color.White, shape = RoundedCornerShape(10.dp))
                 .padding(vertical = 2.dp, horizontal = 5.dp),
             textStyle = TextStyle(
                 fontSize = 14.sp,
@@ -103,18 +107,15 @@ fun Biblioteca(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
+        ButtonComponent(
+            label = "Buscar",
             onClick = {
                 coroutineScope.launch {
                     val result = searchArticles(searchText.text, context)
                     references = result.output.references  // Assign the references from the response
                 }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(Color(0xFF6200EA))
-        ) {
-            Text(text = "Buscar", color = Color.White)
-        }
+            }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -126,24 +127,27 @@ fun Biblioteca(navHostController: NavHostController) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 5.dp)
                         .clickable {
                             // When clicked, show pop-up with the snippet
                             currentSnippet = reference.snippet
                             showPopup = true
                         },
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFB3AFFF)),
-                    shape = RoundedCornerShape(8.dp)
+                    border = BorderStroke(1.dp, Color(0xFFD7DBDD)),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+
+                    shape = RoundedCornerShape(10.dp)
+
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp)
+                        Modifier.padding(30.dp)
                     ) {
                         Text(
                             text = reference.title,
                             style = TextStyle(
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = Color.Black
                             )
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -151,7 +155,7 @@ fun Biblioteca(navHostController: NavHostController) {
                             text = reference.url,
                             style = TextStyle(
                                 fontSize = 14.sp,
-                                color = Color.White
+                                color = Color.Black
                             )
                         )
                     }

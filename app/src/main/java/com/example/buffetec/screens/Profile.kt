@@ -2,6 +2,9 @@
 package com.example.buffetec.screens
 
 
+import android.app.Application
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,20 +27,36 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.buffetec.Components.ButtonComponent
+import com.example.buffetec.Components.InputField
+import com.example.buffetec.interfaces.UsersServices
+import com.example.buffetec.ui.theme.lexendFontFamily
+import com.example.buffetec.viewmodels.GetUserByIdState
+import com.example.buffetec.viewmodels.LoginState
+import com.example.buffetec.viewmodels.SignUpState
+import com.example.buffetec.viewmodels.UpdateState
+import com.example.buffetec.viewmodels.UsersViewModel
 import com.example.lazycolumnexample.navigation.Screen
 
 
@@ -47,29 +66,67 @@ fun Profile(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    var name by remember { mutableStateOf("Hugo") }
-    var lastName by remember { mutableStateOf("Lozano") }
-    var email by remember { mutableStateOf("hugo.lozano@example.com") }
-    var password by remember { mutableStateOf("password123") } // Contraseña real
-    var address by remember { mutableStateOf("Direccion x") }
-    var city by remember { mutableStateOf("Monterrey") }
-
-    // Estado para mostrar el diálogo de cambiar contraseña
+    val context = LocalContext.current
+    val userViewModel = remember { UsersViewModel(UsersServices.instance, context.applicationContext as Application) }
+    val coroutineScope = rememberCoroutineScope()
+    val getUserByIdState by userViewModel.usersbyidState.collectAsState()
+    var name by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") } // Contraseña real
+    var address by remember { mutableStateOf("") }
+    var city by remember { mutableStateOf("") }
     var showChangePasswordDialog by remember { mutableStateOf(false) }
-
-    // Estado para habilitar la edición del perfil
     var isEditingProfile by remember { mutableStateOf(false) }
-
-    // Scroll state para habilitar el scroll en la columna
     val scrollState = rememberScrollState()
-
-    // Focus manager para controlar el teclado
     val focusManager = LocalFocusManager.current
+    val updatestate by userViewModel.updatestate.collectAsState()
+
+
+
+    LaunchedEffect(Unit) {
+        userViewModel.getusuariobyid()
+    }
+
+
+    // Manejar el estado de carga
+    when (getUserByIdState) {
+        is GetUserByIdState.Loading -> {
+            // Mostrar un indicador de carga si es necesario
+        }
+        is GetUserByIdState.Success -> {
+            val userResponse = (getUserByIdState as GetUserByIdState.Success).response
+            name = userResponse.name
+            lastName = userResponse.surname
+            email = userResponse.email
+            address = userResponse.address
+            city = userResponse.city
+            password = "*********" // Ocultar la contraseña en la UI
+        }
+        is GetUserByIdState.Error -> {
+            Toast.makeText(context, "Ha ocurrido un error", Toast.LENGTH_SHORT).show()
+        }
+        else -> {
+            // Manejar cualquier otro estado inesperado, si es necesario
+        }
+    }
+
+    LaunchedEffect(updatestate) {
+        if (updatestate is UpdateState.Success) {
+            Toast.makeText(context,"Actualizacion exitosa",Toast.LENGTH_SHORT).show()
+            userViewModel.getusuariobyid()
+
+        }
+        if (updatestate is UpdateState.Error) {
+            Toast.makeText(context,"Hubo un error al guardar los datos",Toast.LENGTH_SHORT).show()
+
+        }
+    }
+
 
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF7A3CFF))
             .clickable { focusManager.clearFocus() }, // Para quitar el enfoque al hacer clic fuera
         contentAlignment = Alignment.TopCenter
     ) {
@@ -80,14 +137,27 @@ fun Profile(
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(text = "Regresar",
+                fontFamily = lexendFontFamily,
+                fontWeight = FontWeight.ExtraLight,
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = {
+                        navController.navigate(Screen.Biblioteca.route)
+                    })
+            )
+
 
             Text(
                 text = "Perfil de usuario",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.padding(vertical = 16.dp)
+                color = Color.Black,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                fontFamily = lexendFontFamily,
+                style = TextStyle( fontWeight = FontWeight.ExtraLight, fontSize = 30.sp)
             )
+
+            Spacer(modifier = Modifier.height(20.dp))
 
             Column(
                 modifier = Modifier
@@ -103,13 +173,11 @@ fun Profile(
                 // Nombre
                 Text(text = "Nombre:", fontSize = 18.sp, color = Color.Black)
                 if (isEditingProfile) {
-                    TextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
-                    )
+                    InputField(label = "Nombre",
+                        value = name ,
+                        onValueChange = {name = it},
+                        lexendFontFam = lexendFontFamily, visualTrans =  false)
+
                 } else {
                     Text(text = name, fontSize = 16.sp, color = Color.Gray)
                 }
@@ -117,13 +185,10 @@ fun Profile(
                 // Apellido
                 Text(text = "Apellido:", fontSize = 18.sp, color = Color.Black)
                 if (isEditingProfile) {
-                    TextField(
-                        value = lastName,
-                        onValueChange = { lastName = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
-                    )
+                    InputField(label = "Apellidos",
+                        value = lastName ,
+                        onValueChange = {lastName = it},
+                        lexendFontFam = lexendFontFamily, visualTrans =  false)
                 } else {
                     Text(text = lastName, fontSize = 16.sp, color = Color.Gray)
                 }
@@ -131,13 +196,10 @@ fun Profile(
                 // Correo electrónico
                 Text(text = "Correo electrónico:", fontSize = 18.sp, color = Color.Black)
                 if (isEditingProfile) {
-                    TextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
-                    )
+                    InputField(label = "Email",
+                        value = email ,
+                        onValueChange = {email = it},
+                        lexendFontFam = lexendFontFamily, visualTrans =  false)
                 } else {
                     Text(text = email, fontSize = 16.sp, color = Color.Gray)
                 }
@@ -151,38 +213,19 @@ fun Profile(
                 )
 
                 // Botón para cambiar la contraseña
-                Button(
+                ButtonComponent(
+                    label = "Cambiar Contraseña",
                     onClick = { showChangePasswordDialog = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7A3CFF)),
-                    shape = RoundedCornerShape(20.dp)
-                ) {
-                    Text(text = "Cambiar Contraseña", color = Color.White)
-                }
+                )
 
-                // Diálogo para cambiar la contraseña
-                if (showChangePasswordDialog) {
-                    ChangePasswordDialog(
-                        onDismiss = { showChangePasswordDialog = false },
-                        onPasswordChange = { newPassword ->
-                            password = newPassword // Actualiza la contraseña real
-                            showChangePasswordDialog = false
-                        }
-                    )
-                }
 
                 // Dirección
                 Text(text = "Dirección:", fontSize = 18.sp, color = Color.Black)
                 if (isEditingProfile) {
-                    TextField(
-                        value = address,
-                        onValueChange = { address = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
-                    )
+                    InputField(label = "Dirección",
+                        value = address ,
+                        onValueChange = {address = it},
+                        lexendFontFam = lexendFontFamily, visualTrans =  false)
                 } else {
                     Text(text = address, fontSize = 16.sp, color = Color.Gray)
                 }
@@ -190,101 +233,62 @@ fun Profile(
                 // Ciudad
                 Text(text = "Ciudad:", fontSize = 18.sp, color = Color.Black)
                 if (isEditingProfile) {
-                    TextField(
-                        value = city,
-                        onValueChange = { city = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
-                    )
+                    InputField(label = "Ciudad",
+                        value = city ,
+                        onValueChange = {city = it},
+                        lexendFontFam = lexendFontFamily, visualTrans =  false)
                 } else {
                     Text(text = city, fontSize = 16.sp, color = Color.Gray)
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Botones adicionales: Editar Perfil y Cerrar Sesión
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Button(
+                    ButtonComponent(
+                        label =  if (isEditingProfile) "Guardar Cambios" else "Editar Perfil",
+                        onClick = {
+                            if (isEditingProfile) {
+                                guardarCambios(
+                                    userViewModel,
+                                    name,
+                                    lastName,
+                                    email,
+                                    address,
+                                    city
+                                )
+                                // Now toggle after saving
+                                isEditingProfile = !isEditingProfile
+                            } else {
+                                isEditingProfile = !isEditingProfile // Start editing
+                            }
+                        }
+                    )
 
-                        onClick = { isEditingProfile = !isEditingProfile;
-                            navController.navigate(Screen.Cases.route) },
-
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7A3CFF)),
-                        shape = RoundedCornerShape(20.dp)
-                    ) {
-                        Text(
-                            text = if (isEditingProfile) "Guardar Cambios" else "Editar Perfil",
-                            color = Color.White
-                        )
-                    }
-
-                    Button(
-                        onClick = { /* Lógica para cerrar sesión */ },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                        shape = RoundedCornerShape(20.dp)
-                    ) {
-                        Text(text = "Cerrar Sesión", color = Color.White)
-                    }
                 }
+
+
             }
         }
     }
 }
 
-@Composable
-fun ChangePasswordDialog(onDismiss: () -> Unit, onPasswordChange: (String) -> Unit) {
-    var newPassword by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var errorMessage by remember { mutableStateOf("") }
 
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        title = { Text(text = "Cambiar Contraseña") },
-        text = {
-            Column {
-                TextField(
-                    value = newPassword,
-                    onValueChange = { newPassword = it },
-                    label = { Text("Nueva Contraseña") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                TextField(
-                    value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
-                    label = { Text("Confirmar Contraseña") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                if (errorMessage.isNotEmpty()) {
-                    Text(text = errorMessage, color = Color.Red)
-                }
-            }
-        },
-        confirmButton = {
-            Button(onClick = {
-                if (newPassword == confirmPassword) {
-                    onPasswordChange(newPassword) // Se guarda la nueva contraseña
-                } else {
-                    errorMessage = "Las contraseñas no coinciden"
-                }
-            }) {
-                Text("Guardar")
-            }
-        },
-        dismissButton = {
-            Button(onClick = { onDismiss() }) {
-                Text("Cancelar")
-            }
-        }
-    )
+
+fun guardarCambios(
+    userViewModel: UsersViewModel,
+    name: String,
+    surname: String,
+    email: String,
+    address: String,
+    city : String,
+){
+
+   var address2 = address + "3"
+    userViewModel.actualizar(name, surname, email, address2 ,  city)
+    Log.d("resp" , "entro")
 }
 

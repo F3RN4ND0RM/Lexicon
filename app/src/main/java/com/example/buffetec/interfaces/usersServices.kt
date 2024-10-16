@@ -6,10 +6,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import com.example.buffetec.interfaces.LoginResponse
 import com.example.buffetec.network.LoginRequest
+import com.example.buffetec.network.RegisterRequest
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 
 interface UsersServices {
     companion object {
@@ -31,4 +34,14 @@ interface UsersServices {
 
     @POST("login")
     suspend fun login(@Body request: LoginRequest): LoginResponse
+
+    @POST("users")
+    suspend fun registrar(@Body request: RegisterRequest): RegistrarResponse
+
+    @GET("usersbyid")
+    suspend fun userbyid(@Header("authToken") authToken: String) : User
+
+    @PUT("updateuser")
+    suspend fun updateuser(@Header("authToken") authToken: String, @Body request: UpdateRequest) : updateResponse
+
 }

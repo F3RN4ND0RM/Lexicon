@@ -55,11 +55,12 @@ import com.example.buffetec.network.LoginResponse
 import com.example.buffetec.network.RetrofitClient
 import com.example.buffetec.ui.theme.lexendFontFamily
 import com.example.lazycolumnexample.navigation.Screen
-import com.example.tareaimc.InputField
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.buffetec.viewmodels.LoginState
 import androidx.compose.runtime.rememberCoroutineScope
 import  com.example.buffetec.viewmodels.UsersViewModel
+import com.example.buffetec.Components.InputField
+
 import kotlinx.coroutines.launch
 
 
@@ -142,6 +143,10 @@ fun Login(navController: NavHostController){
                             userViewModel.login(user.value, password.value)
                         }
                     })
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
                     Text(text = "Registrarme",
                         fontFamily = lexendFontFamily,
                         fontWeight = FontWeight.ExtraLight,
@@ -153,10 +158,24 @@ fun Login(navController: NavHostController){
                             })
                     )
 
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+                    Text(text = "Entrar como Invitado",
+                        fontFamily = lexendFontFamily,
+                        fontWeight = FontWeight.ExtraLight,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = {
+                                navController.navigate(Screen.Biblioteca.route)
+                            })
+                    )
+
+
                     // Navigation effect when login is successful
                     LaunchedEffect(loginState) {
                         if (loginState is LoginState.Success) {
-                            navController.navigate(Screen.Signup.route) // Replace with your desired route
+                            navController.navigate(Screen.Profile.route) // Replace with your desired route
                         }
                         if (loginState is LoginState.Error) {
                             Toast.makeText(context,"Usuario o contraseña incorrecto",Toast.LENGTH_SHORT).show()
