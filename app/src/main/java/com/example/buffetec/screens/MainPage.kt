@@ -79,7 +79,7 @@ fun MainPage(navController: NavHostController) {
                     title = { Text("Bufetec") },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Abrir Drawer")  // Cambiamos al ícono de menú
+                            Icon(Icons.Default.Menu, contentDescription = "Abrir Drawer")
                         }
                     }
                 )
@@ -246,12 +246,9 @@ fun sendSms(context: Context) {
         data = Uri.parse("smsto:81 8328 4344")
         putExtra("sms_body", "👋 ¡Hola! Me gustaría recibir asesoría personalizada sobre mi caso. 📜💼 ¿Podrían ayudarme, por favor?")
     }
-
-    // Intentar iniciar la actividad
     try {
         context.startActivity(smsIntent)
     } catch (e: Exception) {
-        // Manejo de errores
         Toast.makeText(context, "No se encontró ninguna aplicación de mensajería.", Toast.LENGTH_SHORT).show()
     }
 }
