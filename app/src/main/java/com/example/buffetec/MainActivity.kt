@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
                 Biblioteca(navController)
             }
 
-    NavHost(navController, startDestination = Screen.MainPage.route, modifier = modifier) {
+    NavHost(navController, startDestination = Screen.Login.route, modifier = modifier) {
 
         composable(Screen.Login.route) {
             Login(navController)
