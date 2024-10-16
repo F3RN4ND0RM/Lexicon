@@ -1,33 +1,32 @@
 package com.example.buffetec.network
 
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.POST
+import retrofit2.http.GET
+import retrofit2.http.Path
 
-// Define el cuerpo para el registro y login
-data class RegisterRequest(
-    val name: String,
-    val surname: String,
-    val email: String,
-    val pwd: String,
-    val address: String,
-    val neighborhood: String,
-    val city: String,
-    val state: String,
-    val cp: String
+data class ApiResponse(
+    val id: String,
+    val url: String,
+    val created_at: String,
+    val output: Output
 )
 
-data class LoginRequest(val email: String, val password: String)
+data class Output(
+    val quality: Int,
+    val documents: List<String>,
+    val variables: Map<String, Any>,
+    val max_tokens: Int,
+    val references: List<Reference>
+)
 
-// Define las respuestas
-data class RegisterResponse(val message: String, val token: String)
-data class LoginResponse(val message: String, val token: String)
+// Nueva data class para las referencias
+data class Reference(
+    val url: String,
+    val title: String,
+    val snippet: String
+)
 
-// Define las solicitudes HTTP que hará la app
 interface ApiService {
-    @POST("/register")
-    fun registerUser(@Body request: RegisterRequest): Call<RegisterResponse>
-
-    @POST("/login")
-    fun loginUser(@Body request: LoginRequest): Call<LoginResponse>
+    @GET("biblioteca/{category}")
+    fun searchArticles(@Path("category") category: String): Call<ApiResponse>
 }
