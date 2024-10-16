@@ -1,5 +1,6 @@
 package com.example.buffetec.screens
 
+import Biblioteca
 import CaseDetail
 import Cases
 import android.annotation.SuppressLint
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Person2
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
@@ -53,6 +55,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+
+import com.example.lazycolumnexample.navigation.Screen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,6 +104,12 @@ fun MainPage(navController: NavHostController) {
                 composable(NavItem.Home.route) {
                     Home()  // Llamada a la pantalla de Citas
                 }
+                composable(NavItem.Biblioteca.route) {
+                    Biblioteca(navController)  // Llamada a la pantalla de Citas
+                }
+                composable(NavItem.Admin.route) {
+                    Admin(navController)  // Llamada a la pantalla de Citas
+                }
                 composable("case_detail/{caseId}") { backStackEntry ->
                     val caseId = backStackEntry.arguments?.getString("caseId")
                     if (caseId != null) {
@@ -113,7 +123,7 @@ fun MainPage(navController: NavHostController) {
 
 @Composable
 fun DrawerContent(navController: NavHostController, closeDrawer: () -> Unit) {
-    val items = listOf(NavItem.Home, NavItem.Casos, NavItem.Biblioteca, NavItem.Perfil)
+    val items = listOf(NavItem.Home, NavItem.Casos, NavItem.Biblioteca, NavItem.Perfil, NavItem.Admin)
 
     Column(
         modifier = Modifier
@@ -193,7 +203,6 @@ fun Home() {
             color = Color.Black,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-        TestimonialsSection()
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -288,44 +297,10 @@ fun sendEmail(context: Context) {
     }
 }
 
-@Composable
-fun TestimonialsSection() {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.padding(horizontal = 16.dp)
-    ) {
-        TestimonialItem(
-            author = "Juan Pérez",
-            content = "Buffetec me ayudó a resolver un conflicto legal rápidamente. Excelente atención y profesionalismo."
-        )
-        TestimonialItem(
-            author = "María González",
-            content = "El equipo de abogados fue muy claro y me ofrecieron soluciones efectivas. Recomiendo ampliamente el servicio."
-        )
-        TestimonialItem(
-            author = "Carlos Ramírez",
-            content = "Gracias a Buffetec, pude resolver mi situación legal con facilidad. Siempre estuvieron dispuestos a ayudar."
-        )
-    }
-}
-
-@Composable
-fun TestimonialItem(author: String, content: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(8.dp))
-            .padding(16.dp)
-    ) {
-        Text(text = content, fontSize = 16.sp, color = Color.Gray)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "- $author", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1976D2))
-    }
-}
 sealed class NavItem(val route: String, val title: String, val icon: ImageVector) {
     object Home : NavItem("home", "Home", Icons.Default.Home)
     object Casos : NavItem("cases", "Casos", Icons.Default.AssignmentInd)
     object Perfil : NavItem("profile", "Perfil", Icons.Default.Person)
     object Biblioteca : NavItem("biblioteca", "Biblioteca", Icons.Default.Book)
+    object Admin : NavItem("Admin", "Roles", Icons.Default.Person2)
 }

@@ -21,6 +21,27 @@ data class User(
     val phone: String
 )
 
+data class usersALL(
+    val id: String,
+    val name: String,
+    val surname: String,
+    val gender : String,
+    val email: String,
+    val address: String,
+    val neighborhood: String,
+    val city: String,
+    val state: String,
+    val cp: String,
+    val phone: String,
+    val rol: String,
+)
+
+data class UsersResponse (
+
+    val users: List<usersALL>
+
+)
+
 data class UpdateRequest(
     val name: String,
     val surname: String,

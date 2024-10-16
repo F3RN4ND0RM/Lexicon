@@ -9,6 +9,7 @@ import com.example.buffetec.network.LoginRequest
 import com.example.buffetec.network.RegisterRequest
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -41,7 +42,11 @@ interface UsersServices {
     @GET("usersbyid")
     suspend fun userbyid(@Header("authToken") authToken: String) : User
 
+    @GET("users")
+    suspend fun allUsers(@Header("authToken") authToken: String) : UsersResponse
+
     @PUT("updateuser")
     suspend fun updateuser(@Header("authToken") authToken: String, @Body request: UpdateRequest) : updateResponse
+
 
 }

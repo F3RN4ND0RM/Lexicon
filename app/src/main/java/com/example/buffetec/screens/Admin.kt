@@ -45,13 +45,12 @@ fun Admin(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .background(Color(0xFF622CFF)) // Fondo morado como en el login
             .padding(35.dp, 15.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Admin Panel",
-            color = Color.White,
+            color = Color.Black,
             fontFamily = lexendFontFamily,
             style = TextStyle(
                 fontWeight = FontWeight.ExtraLight,

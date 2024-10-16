@@ -73,16 +73,14 @@ fun Profile(
     var name by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") } // Contraseña real
+    var password by remember { mutableStateOf("******") }
     var address by remember { mutableStateOf("") }
     var city by remember { mutableStateOf("") }
-    var showChangePasswordDialog by remember { mutableStateOf(false) }
     var isEditingProfile by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
     val updatestate by userViewModel.updatestate.collectAsState()
-
-
+    var switchState = true
 
     LaunchedEffect(Unit) {
         userViewModel.getusuariobyid()
@@ -90,26 +88,31 @@ fun Profile(
 
 
     // Manejar el estado de carga
-    when (getUserByIdState) {
-        is GetUserByIdState.Loading -> {
-            // Mostrar un indicador de carga si es necesario
+
+        when (val state = userViewModel.usersbyidState.collectAsState().value) {
+            is GetUserByIdState.Loading -> {
+                // Show a loading indicator if necessary
+            }
+            is GetUserByIdState.Success -> {
+                if (name.isEmpty()) {
+                    name = state.response.name
+                    lastName = state.response.surname
+                    email = state.response.email
+                    address = state.response.address
+                    city = state.response.city
+                }
+            }
+            is GetUserByIdState.Error -> {
+                Toast.makeText(context, "An error occurred", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                // Handle any other unexpected states, if necessary
+            }
         }
-        is GetUserByIdState.Success -> {
-            val userResponse = (getUserByIdState as GetUserByIdState.Success).response
-            name = userResponse.name
-            lastName = userResponse.surname
-            email = userResponse.email
-            address = userResponse.address
-            city = userResponse.city
-            password = "*********" // Ocultar la contraseña en la UI
-        }
-        is GetUserByIdState.Error -> {
-            Toast.makeText(context, "Ha ocurrido un error", Toast.LENGTH_SHORT).show()
-        }
-        else -> {
-            // Manejar cualquier otro estado inesperado, si es necesario
-        }
-    }
+
+
+
+
 
     LaunchedEffect(updatestate) {
         if (updatestate is UpdateState.Success) {
@@ -207,15 +210,9 @@ fun Profile(
                 // Mostrar Contraseña (oculta con asteriscos)
                 Text(text = "Contraseña:", fontSize = 18.sp, color = Color.Black)
                 Text(
-                    text = "*".repeat(password.length), // Muestra los asteriscos
+                    text = "*".repeat(password.length),
                     fontSize = 16.sp,
                     color = Color.Gray
-                )
-
-                // Botón para cambiar la contraseña
-                ButtonComponent(
-                    label = "Cambiar Contraseña",
-                    onClick = { showChangePasswordDialog = true },
                 )
 
 
@@ -249,9 +246,10 @@ fun Profile(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     ButtonComponent(
-                        label =  if (isEditingProfile) "Guardar Cambios" else "Editar Perfil",
+                        label = if (isEditingProfile) "Guardar Cambios" else "Editar Perfil",
                         onClick = {
                             if (isEditingProfile) {
+                                // Guarda los cambios al hacer clic en el botón de "Guardar Cambios"
                                 guardarCambios(
                                     userViewModel,
                                     name,
@@ -260,13 +258,14 @@ fun Profile(
                                     address,
                                     city
                                 )
-                                // Now toggle after saving
-                                isEditingProfile = !isEditingProfile
+                                // Después de guardar, deshabilitar el modo de edición
+                                isEditingProfile = false
                             } else {
-                                isEditingProfile = !isEditingProfile // Start editing
+                                // Habilitar el modo de edición
+                                isEditingProfile = true
                             }
-                        }
-                    )
+                        })
+
 
                 }
 
@@ -287,8 +286,7 @@ fun guardarCambios(
     city : String,
 ){
 
-   var address2 = address + "3"
-    userViewModel.actualizar(name, surname, email, address2 ,  city)
+    userViewModel.actualizar(name, surname, email, address ,  city)
     Log.d("resp" , "entro")
 }
 

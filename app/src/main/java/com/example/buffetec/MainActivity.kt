@@ -17,11 +17,15 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.buffetec.interfaces.User
+import com.example.buffetec.interfaces.usersALL
 import com.example.buffetec.screens.Admin
+
 import com.example.buffetec.screens.Login
 import com.example.buffetec.screens.MainPage
 import com.example.buffetec.screens.Profile
 import com.example.buffetec.textToSpeech.TextToSpeechHelper
+
 import com.example.buffetec.ui.theme.BuffetecTheme
 import com.example.lazycolumnexample.navigation.Screen
 
@@ -56,7 +60,7 @@ class MainActivity : ComponentActivity() {
     fun MainNavigation(modifier: Modifier = Modifier, onSpeak: (String, Any?) -> Unit) {
         val navController = rememberNavController()
 
-        NavHost(navController, startDestination = Screen.MainPage.route, modifier = modifier) {
+        NavHost(navController, startDestination = Screen.Login.route, modifier = modifier) {
             composable(Screen.Biblioteca.route) {
                 Biblioteca(navController)
             }

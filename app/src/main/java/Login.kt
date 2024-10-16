@@ -175,7 +175,7 @@ fun Login(navController: NavHostController){
                     // Navigation effect when login is successful
                     LaunchedEffect(loginState) {
                         if (loginState is LoginState.Success) {
-                            navController.navigate(Screen.Profile.route) // Replace with your desired route
+                            navController.navigate(Screen.MainPage.route) // Replace with your desired route
                         }
                         if (loginState is LoginState.Error) {
                             Toast.makeText(context,"Usuario o contraseña incorrecto",Toast.LENGTH_SHORT).show()
