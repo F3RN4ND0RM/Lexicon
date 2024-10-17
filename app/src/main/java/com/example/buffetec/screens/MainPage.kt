@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AssignmentInd
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Person2
@@ -110,6 +111,7 @@ fun MainPage(navController: NavHostController) {
                 composable(NavItem.Admin.route) {
                     Admin(navController)  // Llamada a la pantalla de Citas
                 }
+
                 composable("case_detail/{caseId}") { backStackEntry ->
                     val caseId = backStackEntry.arguments?.getString("caseId")
                     if (caseId != null) {
@@ -192,17 +194,6 @@ fun Home() {
             modifier = Modifier.padding(bottom = 16.dp)
         )
         ServicesSection()
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Testimonials Section
-        Text(
-            text = "Testimonios",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -303,4 +294,6 @@ sealed class NavItem(val route: String, val title: String, val icon: ImageVector
     object Perfil : NavItem("profile", "Perfil", Icons.Default.Person)
     object Biblioteca : NavItem("biblioteca", "Biblioteca", Icons.Default.Book)
     object Admin : NavItem("Admin", "Roles", Icons.Default.Person2)
+    object LogOut : NavItem("Cerrar Sesión", "Cerrar Sesión", Icons.Default.Logout)
+
 }
