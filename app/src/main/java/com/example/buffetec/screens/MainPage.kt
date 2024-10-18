@@ -4,9 +4,11 @@ import Biblioteca
 import CaseDetail
 import Cases
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,6 +44,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,8 +62,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.buffetec.interfaces.UsersServices
+import com.example.buffetec.viewmodels.GetUserByIdState
+import com.example.buffetec.viewmodels.UsersViewModel
+import com.example.buffetec.viewmodels.rol
 
 import com.example.lazycolumnexample.navigation.Screen
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,6 +79,9 @@ fun MainPage(navController: NavHostController) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+
+
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -75,7 +90,7 @@ fun MainPage(navController: NavHostController) {
                 closeDrawer = { scope.launch { drawerState.close() } }
             )
         },
-                scrimColor = Color.White 
+                scrimColor = Color.White
 
     ) {
         Scaffold(
@@ -111,6 +126,7 @@ fun MainPage(navController: NavHostController) {
                 composable(NavItem.Admin.route) {
                     Admin(navController)  // Llamada a la pantalla de Citas
                 }
+                
 
                 composable("case_detail/{caseId}") { backStackEntry ->
                     val caseId = backStackEntry.arguments?.getString("caseId")
@@ -125,7 +141,45 @@ fun MainPage(navController: NavHostController) {
 
 @Composable
 fun DrawerContent(navController: NavHostController, closeDrawer: () -> Unit) {
-    val items = listOf(NavItem.Home, NavItem.Casos, NavItem.Biblioteca, NavItem.Perfil, NavItem.Admin)
+
+    val context = LocalContext.current
+    val userViewModel = remember { UsersViewModel(UsersServices.instance, context.applicationContext as Application) }
+    val coroutineScope = rememberCoroutineScope()
+    val rol by userViewModel.rolstate.collectAsState()
+    var items = emptyList<NavItem>()
+    var _rol = ""
+
+    LaunchedEffect(Unit) {
+        userViewModel.getRol()
+    }
+
+
+    when (val state = userViewModel.rolstate.collectAsState().value) {
+
+        is rol.Success -> {
+            if (_rol.isEmpty()) {
+                _rol = state.response.toString()
+            }
+        }
+        is rol.Error -> {
+            Toast.makeText(context, "An error occurred", Toast.LENGTH_SHORT).show()
+        }
+        else -> {
+            // Handle any other unexpected states, if necessary
+        }
+    }
+
+
+    if (_rol == "admin"){
+        Log.d("rolres", "true")
+         items = listOf(NavItem.Home, NavItem.Casos, NavItem.Biblioteca, NavItem.Perfil, NavItem.Admin)
+    }else{
+        Log.d("rolres", "false")
+        items = listOf(NavItem.Home, NavItem.Casos, NavItem.Biblioteca, NavItem.Perfil)
+    }
+
+
+
 
     Column(
         modifier = Modifier

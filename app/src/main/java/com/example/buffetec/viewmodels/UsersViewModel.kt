@@ -52,6 +52,22 @@ class UsersViewModel(private val usersService : UsersServices, application: Appl
     val loginState: StateFlow<LoginState> = token
     val usersbyidState =  MutableStateFlow<GetUserByIdState>(GetUserByIdState.Initial)
     val userrolstate = MutableStateFlow<RolUserState>(RolUserState.Initial)
+    val rolstate = MutableStateFlow<rol>(rol.Initial)
+
+    fun getRol(){
+        viewModelScope.launch {
+            val _rol = getApplication<Application>().getRol()
+
+            try {
+                rolstate.value = rol.Loading
+                rolstate.value = rol.Success(_rol)
+
+
+            }catch (e : Exception){
+                Log.e("Error-APT",  "An error has ocurred: ${e.message.toString()}")
+            }
+        }
+    }
 
     fun login(username: String, password: String){
             viewModelScope.launch {
@@ -65,7 +81,6 @@ class UsersViewModel(private val usersService : UsersServices, application: Appl
                     Log.d("respuesta", token.value.toString() )
                     getApplication<Application>().saveToken(response.token.toString())
                     getApplication<Application>().saveRol(response.rol.toString())
-
 
                 }catch (e : Exception){
                     token.value = LoginState.Error("Login failed: ${e.message}")
@@ -352,3 +367,12 @@ sealed class RolUserState{
     data class Success(val response: updateResponse): RolUserState()
     data class Error (val message : String): RolUserState()
 }
+
+
+sealed class rol{
+    object Initial: rol()
+    object Loading: rol()
+    data class Success(val response: String): rol()
+    data class Error (val message : String): rol()
+}
+
