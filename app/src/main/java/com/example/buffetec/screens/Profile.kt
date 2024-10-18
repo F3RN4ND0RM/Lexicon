@@ -118,7 +118,6 @@ fun Profile(
         if (updatestate is UpdateState.Success) {
             Toast.makeText(context,"Actualizacion exitosa",Toast.LENGTH_SHORT).show()
             userViewModel.getusuariobyid()
-
         }
         if (updatestate is UpdateState.Error) {
             Toast.makeText(context,"Hubo un error al guardar los datos",Toast.LENGTH_SHORT).show()

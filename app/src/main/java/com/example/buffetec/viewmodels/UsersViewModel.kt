@@ -26,6 +26,7 @@ import com.example.buffetec.interfaces.UpdateRequest
 import com.example.buffetec.interfaces.User
 import com.example.buffetec.interfaces.UsersResponse
 import com.example.buffetec.interfaces.updateResponse
+import com.example.buffetec.interfaces.updateRolrequest
 import com.example.buffetec.interfaces.usersALL
 import com.example.buffetec.network.LoginRequest
 import com.example.buffetec.network.RegisterRequest
@@ -50,6 +51,23 @@ class UsersViewModel(private val usersService : UsersServices, application: Appl
     val users: StateFlow<LoginState> =token
     val loginState: StateFlow<LoginState> = token
     val usersbyidState =  MutableStateFlow<GetUserByIdState>(GetUserByIdState.Initial)
+    val userrolstate = MutableStateFlow<RolUserState>(RolUserState.Initial)
+    val rolstate = MutableStateFlow<rol>(rol.Initial)
+
+    fun getRol(){
+        viewModelScope.launch {
+            val _rol = getApplication<Application>().getRol()
+
+            try {
+                rolstate.value = rol.Loading
+                rolstate.value = rol.Success(_rol)
+
+
+            }catch (e : Exception){
+                Log.e("Error-APT",  "An error has ocurred: ${e.message.toString()}")
+            }
+        }
+    }
 
     fun login(username: String, password: String){
             viewModelScope.launch {
@@ -63,7 +81,6 @@ class UsersViewModel(private val usersService : UsersServices, application: Appl
                     Log.d("respuesta", token.value.toString() )
                     getApplication<Application>().saveToken(response.token.toString())
                     getApplication<Application>().saveRol(response.rol.toString())
-
 
                 }catch (e : Exception){
                     token.value = LoginState.Error("Login failed: ${e.message}")
@@ -215,6 +232,52 @@ class UsersViewModel(private val usersService : UsersServices, application: Appl
 
     }
 
+    fun updateRol(_id: String, _rol : String){
+
+
+        viewModelScope.launch {
+
+            val _token = getApplication<Application>().getToken()
+            Log.d("respuesta", _token.toString())
+
+            try {
+                userrolstate.value = RolUserState.Loading
+                val updateRolrequest = updateRolrequest(_id, _rol)
+
+                val response = UsersServices.instance.updaterol(_token, updateRolrequest)
+                userrolstate.value = RolUserState.Success(response) // Usa la lista de usuarios directamente
+
+                Log.d("respuesta2", userrolstate.value.toString())
+
+
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        val errorBody = e.response()?.errorBody()?.string() ?: "No error body"
+                        val errorCode = e.code()
+
+                        // Actualizar el estado con información más específica
+                        userrolstate.value = RolUserState.Error("Error: HTTP $errorCode - ${e.message()}")
+
+                        // Log más detallado
+                        Log.e("Error-APT", "HTTP error: $errorCode - ${e.message()}")
+                        Log.e("Error-APT", "Error body: $errorBody")
+                    }
+                    is IOException -> {
+                        // Posible error de red (sin conexión, tiempo de espera agotado, etc.)
+                        userrolstate.value = RolUserState.Error("Error: Network error - ${e.message}")
+                        Log.e("Error-APT", "Network error: ${e.message}")
+                    }
+                    else -> {
+                        // Cualquier otro tipo de error
+                        userrolstate.value = RolUserState.Error("Error: ${e.message}")
+                        Log.e("Error-APT", "An error has occurred: ${e.message}")
+                    }
+                }
+            }
+        }
+        }
+
     fun allUsers() {
         viewModelScope.launch {
             val _token = getApplication<Application>().getToken()
@@ -223,16 +286,11 @@ class UsersViewModel(private val usersService : UsersServices, application: Appl
             try {
                 allusersState.value = AllUsersState.Loading
 
-                // Llama al método del servicio Retrofit para obtener la lista de usuarios
-                val response = UsersServices.instance.allUsers(_token) // Llama a tu método de Retrofit
+                val response = UsersServices.instance.allUsers(_token)
+                allusersState.value = AllUsersState.Success(response) // Usa la lista de usuarios directamente
 
-                // Maneja la respuesta aquí
-                if (response.users.isNotEmpty()) {
-                    allusersState.value = AllUsersState.Success(response.users) // Usa la lista de usuarios directamente
-                    Log.d("respuesta2", allusersState.value.toString())
-                } else {
-                    allusersState.value = AllUsersState.Error("No users found.")
-                }
+                Log.d("respuesta2", allusersState.value.toString())
+
 
             } catch (e: Exception) {
                 when (e) {
@@ -303,3 +361,18 @@ sealed class AllUsersState{
     data class Success(val response: List<usersALL>): AllUsersState()
     data class Error (val message : String): AllUsersState()
 }
+sealed class RolUserState{
+    object Initial: RolUserState()
+    object Loading: RolUserState()
+    data class Success(val response: updateResponse): RolUserState()
+    data class Error (val message : String): RolUserState()
+}
+
+
+sealed class rol{
+    object Initial: rol()
+    object Loading: rol()
+    data class Success(val response: String): rol()
+    data class Error (val message : String): rol()
+}
+

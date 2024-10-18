@@ -22,24 +22,20 @@ data class User(
 )
 
 data class usersALL(
-    val id: String,
+    val id: Int,         // Asegúrate de que el tipo sea Int
     val name: String,
     val surname: String,
-    val gender : String,
-    val email: String,
-    val address: String,
-    val neighborhood: String,
-    val city: String,
-    val state: String,
-    val cp: String,
-    val phone: String,
-    val rol: String,
+    val rol: String
 )
-
 data class UsersResponse (
 
     val users: List<usersALL>
 
+)
+
+data class updateRolrequest(
+    val id : String,
+    val rol : String
 )
 
 data class UpdateRequest(

@@ -61,38 +61,22 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
 
         NavHost(navController, startDestination = Screen.Login.route, modifier = modifier) {
-            composable(Screen.Biblioteca.route) {
-                Biblioteca(navController)
-            }
-            composable(Screen.Login.route) {
-                Login(navController)
-            }
-            composable(Screen.Signup.route) {
-                Signup(navController)
-            }
-            composable(Screen.Profile.route) {
-                Profile(navController)
-            }
-            composable(Screen.Admin.route) {
-                Admin(navController)
-            }
-            composable(Screen.Cases.route) {
-                Cases(navController)
-            }
-            composable(Screen.MainPage.route) {
-                MainPage(navController)
-            }
+            composable(Screen.Biblioteca.route) { Biblioteca(navController) }
+            composable(Screen.Login.route) { Login(navController) }
+            composable(Screen.Signup.route) { Signup(navController) }
+            composable(Screen.Profile.route) { Profile(navController) }
+            composable(Screen.Admin.route) { Admin(navController) }
+            composable(Screen.Cases.route) { Cases(navController) }
+            composable(Screen.MainPage.route) { MainPage(navController) }
             composable("case_detail/{caseId}") { backStackEntry ->
                 val caseId = backStackEntry.arguments?.getString("caseId")
                 if (caseId != null) {
                     CaseDetail(caseId, navController)
                 }
             }
-
         }
-
-        }
-
     }
+}
+
 
 

@@ -43,10 +43,13 @@ interface UsersServices {
     suspend fun userbyid(@Header("authToken") authToken: String) : User
 
     @GET("users")
-    suspend fun allUsers(@Header("authToken") authToken: String) : UsersResponse
+    suspend fun allUsers(@Header("authToken") authToken: String) : List<usersALL>
 
     @PUT("updateuser")
     suspend fun updateuser(@Header("authToken") authToken: String, @Body request: UpdateRequest) : updateResponse
+
+    @PUT("rol")
+    suspend fun updaterol(@Header("authToken") authToken: String, @Body request: updateRolrequest) : updateResponse
 
 
 }
