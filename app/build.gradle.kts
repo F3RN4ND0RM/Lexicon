@@ -89,5 +89,8 @@ dependencies {
     // To use Kotlin annotation processing tool (kapt)
     kapt("androidx.room:room-compiler:$room_version")
     implementation ("androidx.room:room-ktx:2.6.1")
+    testImplementation ("org.mockito:mockito-core:4.0.0")
+    // Para trabajar con Kotlin y Mockito
+    testImplementation ("org.mockito.kotlin:mockito-kotlin:4.0.0")
 
 }
