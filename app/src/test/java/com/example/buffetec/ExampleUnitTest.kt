@@ -8,32 +8,36 @@ import org.junit.Test
 
 class SearchUnitTest {
 
+    // Esta prueba valida que el método de búsqueda de artículos devuelve correctamente las referencias simuladas.
     @Test
     fun searchArticles_returnsReferences() {
-        val referenciasMock = listOf(
-            Reference(
-                url = "https://example.com/document1",
-                title = "Título del Documento 1",
-                snippet = "Este es un fragmento del contenido del primer documento."
-            ),
-            Reference(
-                url = "https://example.com/document2",
-                title = "Título del Documento 2",
-                snippet = "Este es un fragmento del contenido del segundo documento."
-            )
+        // Preparar datos simulados de la API
+        val mockReferences = listOf(
+            Reference(url = "https://example.com/document1",
+                title = "Document Title 1",
+                snippet = "This is a snippet of the first document content."),
+            Reference(url = "https://example.com/document2",
+                title = "Document Title 2",
+                snippet = "This is a snippet of the second document content.")
         )
 
-        val respuestaMock = ApiResponse(
+        // Crear una respuesta simulada de la API con las referencias anteriores
+        val mockResponse = ApiResponse(
             id = "1",
             url = "https://api.example.com/biblioteca",
             created_at = "2024-01-01",
-            output = Output(10, listOf(), mapOf(), 50, referenciasMock)
+            output = Output(10, listOf(), mapOf(), 50, mockReferences)
         )
 
-        val referencias = respuestaMock.output.references
+        // Obtener las referencias desde la respuesta simulada
+        val references = mockResponse.output.references
 
-        assertNotNull(referencias)
-        assertEquals(2, referencias.size)
-        assertEquals("Título del Documento 1", referencias[0].title)
+        // Verificar que no sea nulo
+        assertNotNull(references)
+        // Verificar que se devuelvan dos referencias, como se espera en los datos simulados
+        assertEquals(2, references.size)
+        // Verificar que el título de la primera referencia sea el esperado
+        assertEquals("Document Title 1", references[0].title)
     }
+
 }
