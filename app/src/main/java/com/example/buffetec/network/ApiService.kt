@@ -1,13 +1,11 @@
 package com.example.buffetec.network
 
 import retrofit2.Call
-
 import retrofit2.http.Body
-import retrofit2.http.Header
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 data class User(
     val id: String,
@@ -99,6 +97,22 @@ data class Reference(
     val url: String,
     val title: String,
     val snippet: String
+)
+
+data class UpdateRequest(
+    val name: String,
+    val lastName: String,
+    val email: String,
+    val address: String,
+    val city: String
+)
+
+data class UpdateResponse(
+    val message: String
+)
+
+data class UpdateOutput(
+    val references: List<Reference>
 )
 
 

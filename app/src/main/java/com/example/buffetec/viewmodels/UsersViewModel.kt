@@ -1,47 +1,31 @@
 package com.example.buffetec.viewmodels
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import android.app.Application
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.datastore.core.IOException
-import androidx.datastore.dataStore
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.buffetec.data.PreferencesKey.TOKEN
-import com.example.buffetec.interfaces.UsersServices
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import com.example.buffetec.interfaces.LoginResponse
 import com.example.buffetec.interfaces.RegistrarResponse
 import com.example.buffetec.interfaces.UpdateRequest
 import com.example.buffetec.interfaces.User
-import com.example.buffetec.interfaces.UsersResponse
+import com.example.buffetec.interfaces.UsersServices
 import com.example.buffetec.interfaces.updateResponse
 import com.example.buffetec.interfaces.updateRolrequest
 import com.example.buffetec.interfaces.usersALL
 import com.example.buffetec.network.LoginRequest
 import com.example.buffetec.network.RegisterRequest
-import dataStore
 import getRol
 import getToken
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import saveRol
 import saveToken
+import java.io.IOException
 
 
 class UsersViewModel(private val usersService : UsersServices, application: Application) : AndroidViewModel(application) {
+    constructor() : this(UsersServices.instance, Application())
 
 
     private val token = MutableStateFlow<LoginState>(LoginState.Initial)
