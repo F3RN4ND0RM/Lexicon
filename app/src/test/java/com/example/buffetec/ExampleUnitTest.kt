@@ -10,26 +10,30 @@ class SearchUnitTest {
 
     @Test
     fun searchArticles_returnsReferences() {
-        val mockReferences = listOf(
-            Reference(url = "https://example.com/document1",
-                title = "Document Title 1",
-                snippet = "This is a snippet of the first document content."),
-            Reference(url = "https://example.com/document2",
-                title = "Document Title 2",
-                snippet = "This is a snippet of the second document content.")
+        val referenciasMock = listOf(
+            Reference(
+                url = "https://example.com/document1",
+                title = "Título del Documento 1",
+                snippet = "Este es un fragmento del contenido del primer documento."
+            ),
+            Reference(
+                url = "https://example.com/document2",
+                title = "Título del Documento 2",
+                snippet = "Este es un fragmento del contenido del segundo documento."
+            )
         )
-        val mockResponse = ApiResponse(
+
+        val respuestaMock = ApiResponse(
             id = "1",
             url = "https://api.example.com/biblioteca",
             created_at = "2024-01-01",
-            output = Output(10, listOf(), mapOf(), 50, mockReferences)
+            output = Output(10, listOf(), mapOf(), 50, referenciasMock)
         )
 
-        val references = mockResponse.output.references
+        val referencias = respuestaMock.output.references
 
-        assertNotNull(references)
-        assertEquals(2, references.size)  
-        assertEquals("Document Title 1", references[0].title)
+        assertNotNull(referencias)
+        assertEquals(2, referencias.size)
+        assertEquals("Título del Documento 1", referencias[0].title)
     }
-
 }
